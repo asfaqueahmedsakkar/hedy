@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "184524257923",
+    "firebase_url": "https://hedyone-d76a8.firebaseio.com",
+    "project_id": "hedyone-d76a8",
+    "storage_bucket": "hedyone-d76a8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:184524257923:android:40b88416b0cf2784",
+        "android_client_info": {
+          "package_name": "com.debugbd.hedy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "184524257923-9g327bbnt7dlklsau7l3vt2ihj980qu5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.debugbd.hedy",
+            "certificate_hash": "be4adbacbfb5775637eb6bc0322f99744f034466"
+          }
+        },
+        {
+          "client_id": "184524257923-iif4sbt1546e51am9vmsdid89rvpdq1u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyLsplPlvwtxHzRe6H6H6Eo1aM-bryyX8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "184524257923-iif4sbt1546e51am9vmsdid89rvpdq1u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
