@@ -1,7 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:hedy/AppColor.dart';
+import 'package:hedy/CutomButton.dart';
 import 'package:http/http.dart' as http;
+
 import 'PasswordTyped.dart';
 
 class ResetPassword extends StatefulWidget {
@@ -9,139 +12,125 @@ class ResetPassword extends StatefulWidget {
 }
 
 class _ResetPasswordState extends State<ResetPassword> {
-  var emailReset, StatusCodeEmail, StatusCodeC, codeCheck;
-  TextEditingController varEmail, varCode;
+  var emailReset, statusCodeEmail, statusCodeC, codeCheck, msg;
+  TextEditingController emailController, codeController;
   List<Widget> list = new List();
   bool _canShowButton = false;
 
   @override
   void initState() {
-    // TODO: implement initState
+    emailController = new TextEditingController();
+    codeController = new TextEditingController();
     super.initState();
-    varEmail = new TextEditingController();
-    varEmail.addListener(() {
-      print(varEmail);
-    });
-    varCode = new TextEditingController();
-    varCode.addListener(() {});
-    fetchPost(varEmail);
-    fetchCode(varEmail, varCode);
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    varEmail.dispose();
+    emailController.dispose();
+    codeController.dispose();
     super.dispose();
-    fetchPost(varEmail);
-    fetchCode(varEmail, varCode);
   }
 
-  Future<String> fetchPost(emailReset) async {
+  Future<String> requestRecoveryCode(emailReset) async {
     final response = await http.post(
         'http://app.hedy.info/api/passwordreset/requestcode',
-        body: {'email': varEmail.text});
+        body: {'email': emailController.text});
 
     print(response.body);
     var decodedData = jsonDecode(response.body);
-    //print(decodedData);
-    //destination = decodedData['DestinationLocation'];
-    //data =
-    //decodedData['Response']['grouped']['category:AIR']['doclist']['docs'];
-    //print(data);
-    StatusCodeEmail = decodedData['status'];
+    statusCodeEmail = decodedData['status'];
+    if (statusCodeEmail == 0)
+      msg = decodedData['message'];
+    else
+      msg = null;
 
     return "success";
   }
 
-  Future<String> fetchCode(emailReset, codeCheck) async {
+  Future<String> submitRecoveryCode(emailReset, codeCheck) async {
     final response = await http.post(
         'http://app.hedy.info/api/passwordreset/checkcode',
-        body: {'email': varEmail.text, 'code': varCode.text});
+        body: {'email': emailController.text, 'code': codeController.text});
 
     print(response.body);
     var decodedData = jsonDecode(response.body);
-    //print(decodedData);
-    //destination = decodedData['DestinationLocation'];
-    //data =
-    //decodedData['Response']['grouped']['category:AIR']['doclist']['docs'];
-    //print(data);
-    StatusCodeC = decodedData['status'];
+    statusCodeC = decodedData['status'];
 
     return "success";
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
+      backgroundColor: Colors.deepPurple[50],
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            children: <Widget>[
-              SizedBox(
-                height: 45.0,
-              ),
-              Image(
-                image: AssetImage('images/hedy-logo-black.png'),
-                height: 50.0,
-                width: 140.0,
-              ),
-              SizedBox(
-                height: 25.0,
-              ),
-              Text(
-                "Forgot your password? Can't Log in?We'll",
-                style: TextStyle(color: Colors.black),
-              ),
-              Text(
-                "send a recovery code to your email",
-                style: TextStyle(color: Colors.black),
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
-              TextField(
-                controller: varEmail,
-                decoration: InputDecoration(
+        child: Container(
+          color: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(
+                  height: 64.0,
+                ),
+                Logo(),
+                SizedBox(
+                  height: 32.0,
+                ),
+                Text(
+                  "Forgot your password? Can't Log in?We'll send a recovery code to your email",
+                  style: TextStyle(color: Colors.black, fontSize: 14.0),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 32.0,
+                ),
+                TextField(
+                  controller: emailController,
+                  style: TextStyle(fontSize: 18.0),
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    border: UnderlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Colors.black, width: 1.0)),
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Colors.black, width: 1.0)),
                     hintText: "Email",
                     hintStyle: TextStyle(
                       color: Colors.grey,
-                    )),
-              ),
-              SizedBox(
-                height: 15.0,
-              ),
-              SizedBox(
-                height: 50.0,
-                width: 340.0,
-                child: RaisedButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
                     ),
-                    color: Color(0xff963CBD),
-                    child: Text(
-                      "Send recovery code",
-                      style: TextStyle(color: Colors.white, fontSize: 18.0),
-                    ),
-                    onPressed: () {
-                      fetchPost(varEmail.text);
-                      if (varEmail.text == '' || StatusCodeEmail == 0) {
-                        _showDialog();
-                      } else {
-                        setState(() => _canShowButton = !_canShowButton);
-                      }
-                      //Is==true;
-                    }),
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
-              Container(
-                child: _canShowButton ? _recoveryCode() : SizedBox(),
-              )
-            ],
+                  ),
+                ),
+                SizedBox(
+                  height: 32.0,
+                ),
+                CustomButton(
+                  title: "Send recovery code",
+                  fillColor: AppColor.magenta,
+                  onPress: () {
+                    requestRecoveryCode(emailController.text);
+                    if (emailController.text == '' || statusCodeEmail == 0) {
+                      _showDialog(msg: msg);
+                    } else {
+                      setState(() => _canShowButton = !_canShowButton);
+                    }
+                    //Is==true;
+                  },
+                ),
+                SizedBox(
+                  height: 32.0,
+                ),
+                Container(
+                  child: _canShowButton
+                      ? _recoveryCode()
+                      : SizedBox(
+                          height: 32.0,
+                        ),
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -153,66 +142,68 @@ class _ResetPasswordState extends State<ResetPassword> {
       padding: const EdgeInsets.all(0.0),
       child: Column(
         children: <Widget>[
-          SizedBox(
-            height: 20.0,
+          Text(
+            "Put the recovery code in the box",
+            textAlign: TextAlign.center,
           ),
-          Text("Put the recovery code in the box"),
           SizedBox(
-            height: 20.0,
+            height: 32.0,
           ),
           TextField(
-            controller: varCode,
+            controller: codeController,
             keyboardType: TextInputType.number,
+            style: TextStyle(
+              fontSize: 18.0,
+            ),
             decoration: InputDecoration(
-                hintText: "Recovery Code",
-                hintStyle: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 19.0,
-                )),
+              border: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black, width: 1.0)),
+              focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black, width: 1.0)),
+              hintText: "Recovery Code",
+              hintStyle: TextStyle(
+                color: Colors.grey,
+                fontSize: 18.0,
+              ),
+            ),
           ),
           SizedBox(
-            height: 15.0,
+            height: 32.0,
+          ),
+          CustomButton(
+            fillColor: AppColor.magenta,
+            title: "Send",
+            onPress: () {
+              submitRecoveryCode(emailController.text, codeController.text);
+              if (codeController.text == '' || statusCodeC == 0) {
+                _showCodeWrong();
+              } else {
+                var emailSend = emailController.text;
+                var codeSend = codeController.text;
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return PasswordTyped(emailSend, codeSend);
+                }));
+              }
+            },
           ),
           SizedBox(
-            height: 50.0,
-            width: 340.0,
-            child: RaisedButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                color: Color(0xff963CBD),
-                child: Text(
-                  "Send",
-                  style: TextStyle(color: Colors.white, fontSize: 18.0),
-                ),
-                onPressed: () {
-                  fetchCode(varEmail.text, varCode.text);
-                  if (varCode.text == '' || StatusCodeC == 0) {
-                    _showCodeWrong();
-                  } else {
-                    var emailSend = varEmail.text;
-                    var codeSend = varCode.text;
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return PasswordTyped(emailSend, codeSend);
-                    }));
-                  }
-                }),
+            height: 64.0,
           )
         ],
       ),
     );
   }
 
-  void _showDialog() {
-    // flutter defined function
+  void _showDialog({String msg}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
+          contentPadding:
+              EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           title: new Text("Attention"),
-          content: new Text("Please put your email address"),
+          content: new Text(msg ?? "Please put your email address"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
@@ -247,6 +238,21 @@ class _ResetPasswordState extends State<ResetPassword> {
           ],
         );
       },
+    );
+  }
+}
+
+class Logo extends StatelessWidget {
+  const Logo({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Image(
+      image: AssetImage('images/hedy-logo-black.png'),
+      height: 50.0,
+      width: 140.0,
     );
   }
 }

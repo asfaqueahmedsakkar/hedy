@@ -1,90 +1,138 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:hedy/BlocProvider.dart';
+import 'package:hedy/InfoBloc.dart';
+import 'package:http/http.dart' as http;
+
 import 'Profile.dart';
 import 'Settings.dart';
 
-class DetailsPage extends StatefulWidget{
-  int id;
-  var name;
-  DetailsPage(this.id,this.name);
-  _DetailsPageState createState()=> _DetailsPageState(this.id,this.name);
+class DetailsPage extends StatefulWidget {
+  _DetailsPageState createState() => _DetailsPageState();
 }
 
-class _DetailsPageState extends State<DetailsPage>{
-  int id;
-  var name;
-  _DetailsPageState(this.id,this.name);
+class _DetailsPageState extends State<DetailsPage> {
+  InfoBloc bloc;
+  StreamController _streamController;
+
+  @override
+  void initState() {
+    bloc = BlocProvider.of<InfoBloc>(context);
+    _streamController = new StreamController();
+    getNotifications();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
-      backgroundColor:   Color(0xff963CBD),
+      backgroundColor: Color(0xff963CBD),
       appBar: AppBar(
         backgroundColor: Colors.white,
-        /*leading: IconButton(
-            icon: Icon(Icons.person_outline,color: Colors.black,size: 50.0,),
-            onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context){
-                return ProfilePage();
-              }));
-
-            }
-        ),
-        */
         leading: GestureDetector(
-          onTap: (){
-            int userId=id;
-            var userName=name;
-            Navigator.push(context, MaterialPageRoute(builder: (context){
-              return ProfilePage(userId,userName);
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return ProfilePage();
             }));
           },
-          child: Image(
+          child: Center(
+            child: Image(
               image: AssetImage('images/profile.png'),
-            height: 2.0,
-            width: 2.0,
-
+              width: 32,
+              height: 32,
+            ),
           ),
         ),
         title: Container(
-          child: Image(image: AssetImage('images/hedy-logo-black.png'),
-          height: 40.0,
-            width: 80.0,
+          child: Center(
+            child: Image(
+              image: AssetImage('images/hedy-logo-black.png'),
+              height: 32,
+            ),
           ),
           alignment: Alignment.center,
         ),
         actions: <Widget>[
-          /*IconButton(icon: Icon(Icons.calendar_today,color: Colors.black,size: 40.0,),
-              onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context){
-              return SettingsPage();
-            }));
-
-          }
-
-          )
-          */
           GestureDetector(
-            onTap: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context){
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return SettingsPage();
               }));
-
             },
-            child: Image(
-              image: AssetImage('images/settings.png'),
+            child: Center(
+              child: Image(
+                image: AssetImage('images/settings.png'),
+                width: 32,
+                height: 32,
+              ),
             ),
           )
         ],
-
       ),
-      body:SingleChildScrollView(
-        child: Container(
-          child: Image(image: AssetImage('images/drawn-heart.png')),
-        ),
+      body: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+            gradient: RadialGradient(
+                stops: [0.0, 1.4],
+                colors: [Colors.purpleAccent[400], Colors.deepPurple])),
+        child: StreamBuilder(
+            stream: _streamController.stream,
+            builder: (context, snapShot) {
+              if (!snapShot.hasData || snapShot.data == null)
+                return CircularProgressIndicator();
+              else {
+                dynamic json = jsonDecode(snapShot.data);
 
-
-             ),
+                if (json["status"] != 1) return _noNotificationUi();
+              }
+            }),
+      ),
     );
   }
 
+  Column _noNotificationUi() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          "Nice and empty",
+          style: TextStyle(
+            fontSize: 32.0,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 32.0),
+          child: SizedBox(
+            width: 260.0,
+            child: Text(
+              "You don't have any reminders waiting but when you do they will be listed here",
+              style: TextStyle(
+                fontSize: 18.0,
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+        Container(
+          child: Image(
+            image: AssetImage('images/drawn-heart.png'),
+            width: 260.0,
+          ),
+        ),
+      ],
+    );
+  }
+
+  void getNotifications() async {
+    var resp =
+        await http.post("http://app.hedy.info/api/user/notifications", body: {
+      "id_user": bloc.currentUser.id.toString(),
+    });
+    _streamController.add(resp.body);
+  }
 }

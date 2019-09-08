@@ -1,249 +1,213 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'CreateAccount.dart';
-import 'SliderPage.dart';
-import 'package:onesignal/onesignal.dart';
+import 'package:hedy/ActivationCode.dart';
+import 'package:hedy/AppColor.dart';
+import 'package:hedy/BlocProvider.dart';
+import 'package:hedy/CutomButton.dart';
+import 'package:hedy/DetailsPage.dart';
+import 'package:hedy/InfoBloc.dart';
+import 'package:hedy/Models/UserModel.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'CreateAccount.dart';
 import 'ResetPassword.dart';
-
-
-
 
 class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  //OneSignal.shared.init("343c7750-2f38-4244-a09c-be77fb655a8c", iOSSettings: settings);
-  TextEditingController varEmail,varPassword;
-  var emailLogin,paaswordLogin,StatusCode,name;
-  int id;
-
+  TextEditingController varEmail, varPassword;
+  var emailLogin, passwordLogin, statusCode;
+  InputDecoration decoration;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    OneSignal.shared.init(
-        "d7809362-d385-4fee-932a-30daff16ecc7",
-        iOSSettings: {
-          OSiOSSettings.autoPrompt: false,
-          OSiOSSettings.inAppLaunchUrl: true
-        }
-    );
-    OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
 
     varEmail = new TextEditingController();
-    varEmail.addListener((){
-      print(varEmail.text);
-
-    });
     varPassword = new TextEditingController();
-    varPassword.addListener((){
-      print(varPassword.text);
-
-    });
-
-
-
-    fetchPost(varEmail,varPassword);
+    decoration = InputDecoration(
+      enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black, width: 1.0)),
+      border: UnderlineInputBorder(
+        borderSide: BorderSide(color: Colors.black, width: 1.0),
+      ),
+      disabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black, width: 1.0)),
+      focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black, width: 1.0)),
+    );
   }
+
   @override
   void dispose() {
-    // TODO: implement dispose
     varEmail.dispose();
     varPassword.dispose();
-    fetchPost(varEmail,varPassword);
     super.dispose();
   }
 
-  Future<String> fetchPost(emailLogin,passwordLogin) async {
-    final response = await http.post(
-        'http://app.hedy.info/api/login',
-        body: {'email': varEmail.text,'password': varPassword.text}
+  Future<String> login(emailLogin, passwordLogin) async {
+    showDialog(
+        context: context,
+        builder: (context) => Center(
+              child: CircularProgressIndicator(),
+            ));
 
-    );
+    final response = await http.post('http://app.hedy.info/api/login', body: {
+      'email': varEmail.text,
+      'password': varPassword.text
+    }).catchError((e) {
+      print(e);
+    });
 
-    print(response.body);
     var decodedData = jsonDecode(response.body);
-    //print(decodedData);
-    //destination = decodedData['DestinationLocation'];
-    //data =
-    //decodedData['Response']['grouped']['category:AIR']['doclist']['docs'];
-    //print(data);
-    StatusCode=decodedData['status'];
-    id=decodedData['user']['id'];
-    name=decodedData['user']['name'];
-    print("id is $id");
-    print(name);
+    statusCode = decodedData['status'];
+    dynamic user = decodedData['user'];
 
+    Navigator.pop(context);
+    if (statusCode == 1) {
+      SharedPreferences sp = await SharedPreferences.getInstance();
+      await sp.setString("user", response.body);
+      UserModel userModel = UserModel.fromJson(user);
+      BlocProvider.of<InfoBloc>(context).currentUser = userModel;
+
+      if (userModel.completionStatus == 1) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return DetailsPage();
+        }));
+      } else {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return ActivationCode();
+        }));
+      }
+    } else {
+      _showDialog(msg: decodedData['error_messages'][0]);
+    }
 
     return "success";
   }
 
-
   @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
+  Widget build(BuildContext context) {          
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(32.0),
           child: Column(
-            // mainAxisAlignment: MainAxisAlignment.start,
-            //crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               SizedBox(
-                height: 45.0,
+                height: 48.0,
               ),
-              Image(
-                image: AssetImage('images/hedy-logo-black.png'),
-                height: 50.0,
-                width: 140.0,
-              ),
+              Logo(),
               SizedBox(
                 height: 30.0,
               ),
-              Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "Email",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15.0,
-                      ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Email",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16.0,
                     ),
-                    SizedBox(
-                      height: 15.0,
-                    ),
-                    TextField(
-                      controller: varEmail,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(),
-                    ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    Text(
-                      "Password",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15.0,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 15.0,
-                    ),
-                    TextField(
-                      controller: varPassword,
-                      obscureText: true,
-                      decoration: InputDecoration(),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20.0,),
-              Container(
-                child:
-                    GestureDetector(
-                      onTap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context){
-                          return ResetPassword();
-                        }));
-                      },
-                      child: Text(
-                        "Forget password ?",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 13.0,
-                        ),
-
-
-                ),
-                    ),
-                alignment: Alignment.centerRight,
-
-              ),
-
-              SizedBox(
-                height: 20.0,
-              ),
-              SizedBox(
-                height: 50.0,
-                width: 340.0,
-                child: RaisedButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    color:Color(0xff963CBD),
-                    child: Text(
-                      "Log in",
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                    onPressed: () {
-                      fetchPost(varEmail.text, varPassword.text);
-                      if(StatusCode==0){
-                        _showDialog();
-                      }
-                      else if(StatusCode==1){
-                        int userId=id;
-                        var userName=name;
-                        Navigator.push(context, MaterialPageRoute(builder: (context){
-                          return SliderPage(userId,userName);
-                        }));
-                      }
-
-                    }),
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
-              SizedBox(
-                height: 50.0,
-                width: 340.0,
-                child: RaisedButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    color: Color(0xff407EC9),
-                    child: Text(
-                      "Log in with Facebook",
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                    onPressed: () {
-
-
-                    }),
-              ),
-              SizedBox(height: 20.0,),
-              GestureDetector(
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context){
-                    return CreateAccount();
-                  }));
-                },
-                child: Container(
-                  height: 50.0,
-                  width: 340.0,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(color:Color(0xff963CBD)),
                   ),
+                  TextField(
+                    controller: varEmail,
+                    keyboardType: TextInputType.emailAddress,
+                    style: TextStyle(fontSize: 18.0),
+                    decoration: decoration,
+                  ),
+                  SizedBox(
+                    height: 32.0,
+                  ),
+                  Text(
+                    "Password",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                  TextField(
+                    controller: varPassword,
+                    obscureText: true,
+                    style: TextStyle(fontSize: 18.0),
+                    decoration: decoration,
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 16.0,
+              ),
+              Container(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return ResetPassword();
+                    }));
+                  },
+                  child: Text(
+                    "Forget password ?",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14.0,
+                    ),
+                  ),
+                ),
+                alignment: Alignment.centerRight,
+              ),
+              SizedBox(
+                height: 32.0,
+              ),
+              CustomButton(
+                onPress: () {
+                  login(varEmail.text, varPassword.text);
+                },
+                fillColor: AppColor.magenta,
+                title: "Log in",
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              CustomButton(
+                title: "Log in with Facebook",
+                fillColor: AppColor.blue,
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              Container(
+                height: 54.0,
+                width: 340.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: AppColor.magenta,
+                    width: 2.0,
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: RawMaterialButton(
+                  elevation: 0.0,
+                  highlightElevation: 0.0,
+                  constraints: BoxConstraints.expand(),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return CreateAccount();
+                    }));
+                  },
+                  splashColor: Colors.white,
                   child: Text(
                     "Create account",
-                    style: TextStyle(
-                      color:Color(0xff963CBD),
-                    ),
+                    style: TextStyle(color: AppColor.magenta, fontSize: 18.0),
                   ),
-                  alignment: Alignment.center,
                 ),
               )
             ],
@@ -252,19 +216,22 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-  void _showDialog() {
-    // flutter defined function
+
+  void _showDialog({@required String msg}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        // return object of type Dialog
         return AlertDialog(
-          title: new Text("Attention"),
-          content: new Text("Email or Password is not correct."),
+          contentPadding:
+              EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          title: new Text(
+            "Attention",
+            style: TextStyle(fontSize: 20.0),
+          ),
+          content: new Text(msg, style: TextStyle(fontSize: 16.0)),
           actions: <Widget>[
-            // usually buttons at the bottom of the dialog
             new FlatButton(
-              child: new Text("ok"),
+              child: new Text("ok", style: TextStyle(fontSize: 16.0)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -274,5 +241,4 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
-
 }

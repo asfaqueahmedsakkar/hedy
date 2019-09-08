@@ -26,9 +26,9 @@ dependencies:
   page_indicator: ^0.3.0
   circular_check_box: ^0.0.2
   onesignal: ^1.1.0
-  firebase_auth: ^0.14.0+3
-  firebase_core: ^0.4.0+9
+  firebase_core: ^0.4.0
   http: ^0.12.0+2
+  shared_preferences:
 
 
 dev_dependencies:
@@ -74,7 +74,7 @@ flutter:
   fonts:
     - family: Calibre
       fonts:
-        - asset: fonts/Calibre-MediumItalic.otf
+        - asset: fonts/Calibre-Regular.otf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

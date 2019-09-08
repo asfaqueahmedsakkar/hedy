@@ -1,7 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'ActivationCode.dart';
+import 'package:hedy/ActivationCode.dart';
+import 'package:hedy/AppColor.dart';
+import 'package:hedy/BlocProvider.dart';
+import 'package:hedy/CutomButton.dart';
+import 'package:hedy/InfoBloc.dart';
+import 'package:hedy/Models/UserModel.dart';
+import 'package:hedy/ResetPassword.dart';
 import 'package:http/http.dart' as http;
-import 'package:async/async.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateAccount extends StatefulWidget {
   _CreateAccountState createState() => _CreateAccountState();
@@ -9,241 +17,189 @@ class CreateAccount extends StatefulWidget {
 
 class _CreateAccountState extends State<CreateAccount> {
   TextEditingController varEmail, varPassword, varRepeatPassword, varName;
-  var email;
-  var password;
-  var repeatPass;
-  var name;
-
-  //var url ='http://app.hedy.info/api/register';
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     varEmail = new TextEditingController();
-    varEmail.addListener(() {
-      print(varEmail.text);
-    });
     varPassword = new TextEditingController();
-    varPassword.addListener(() {
-      print(varPassword.text);
-    });
     varRepeatPassword = new TextEditingController();
-    varRepeatPassword.addListener(() {
-      print(varRepeatPassword);
-    });
     varName = new TextEditingController();
-    varName.addListener(() {
-      print(varName.text);
-    });
-    fetchPost(varName, varEmail, varPassword, varRepeatPassword);
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     varEmail.dispose();
     varPassword.dispose();
     varRepeatPassword.dispose();
-    fetchPost(varName, varEmail, varPassword, varRepeatPassword);
-
     super.dispose();
   }
 
-  Future<String> fetchPost(name, email, password, repeatPass) async {
+  Future<String> registerUser(name, email, password, repeatPass) async {
+    showDialog(
+        context: context,
+        builder: (context) => Center(
+              child: CircularProgressIndicator(),
+            ));
     final response =
         await http.post('http://app.hedy.info/api/register', body: {
-      'name': varName.text,
       'email': varEmail.text,
       'password': varPassword.text,
       'password_confirmation': varPassword.text
     });
 
+    dynamic resp = jsonDecode(response.body);
     print(response.body);
-    //var decodedData = jsonDecode(response.body);
-    //print(decodedData);
-    //destination = decodedData['DestinationLocation'];
-    //data =
-    //decodedData['Response']['grouped']['category:AIR']['doclist']['docs'];
-    //print(data);
+    if (resp["status"] == 1) {
+      dynamic user = resp["user"];
+      SharedPreferences sp = await SharedPreferences.getInstance();
+      await sp.setString("user", response.body);
+
+      UserModel cu = UserModel.fromJson(user);
+      BlocProvider.of<InfoBloc>(context).currentUser = cu;
+
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        return ActivationCode();
+      }));
+    } else {
+      Navigator.pop(context);
+      _showDialog(msg: resp["message"]);
+    }
 
     return "success";
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    InputDecoration decoration = InputDecoration(
+      enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black, width: 1.0)),
+      border: UnderlineInputBorder(
+        borderSide: BorderSide(color: Colors.black, width: 1.0),
+      ),
+      disabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black, width: 1.0)),
+      focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black, width: 1.0)),
+    );
+    TextStyle editTextStyle = TextStyle(fontSize: 18.0);
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(32.0),
           child: Column(
             children: <Widget>[
               SizedBox(
-                height: 50.0,
+                height: 32.0,
               ),
-              Image(
-                image: AssetImage('images/hedy-logo-black.png'),
-                height: 50.0,
-                width: 140.0,
-              ),
+              Logo(),
               SizedBox(
-                height: 30.0,
+                height: 16.0,
               ),
               Text(
                 "Create account",
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 30.0,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 28.0,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               SizedBox(
-                height: 20.0,
+                height: 16.0,
               ),
               Text(
                 "We don't give your details to",
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 20.0,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.w300,
                 ),
               ),
               SizedBox(
-                height: 10.0,
+                height: 4.0,
               ),
               Text(
                 "anyone else",
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 20.0,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.w300,
                 ),
               ),
-              SizedBox(height: 5.0,),
+              SizedBox(
+                height: 5.0,
+              ),
               Container(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    GestureDetector(
-                      onTap: () {
-                        var emails = varEmail.text;
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return ActivationCode(emails);
-                        }));
-                      },
-                      child: Text(
-                        "Name",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 15.0,
-                        ),
-                      ),
-                    ),
                     SizedBox(
-                      height: 10.0,
-                    ),
-                    TextField(
-                      controller: varName,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(),
-                    ),
-                    SizedBox(
-                      height: 20.0,
+                      height: 32.0,
                     ),
                     Text(
                       "Email",
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 15.0,
+                        fontSize: 16.0,
                       ),
-                    ),
-                    SizedBox(
-                      height: 10.0,
                     ),
                     TextField(
                       controller: varEmail,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(),
+                      decoration: decoration,
+                      style: editTextStyle,
                     ),
                     SizedBox(
-                      height: 20.0,
+                      height: 32.0,
                     ),
                     Text(
                       "Password",
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 15.0,
+                        fontSize: 16.0,
                       ),
-                    ),
-                    SizedBox(
-                      height: 10.0,
                     ),
                     TextField(
                       controller: varPassword,
                       obscureText: true,
                       keyboardType: TextInputType.text,
-                      decoration: InputDecoration(),
+                      decoration: decoration,
+                      style: editTextStyle,
                     ),
                     SizedBox(
-                      height: 20.0,
+                      height: 32.0,
                     ),
                     Text(
-                      " Repeat Password",
+                      "Repeat Password",
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 15.0,
+                        fontSize: 16.0,
                       ),
-                    ),
-                    SizedBox(
-                      height: 10.0,
                     ),
                     TextField(
                       controller: varRepeatPassword,
                       obscureText: true,
                       keyboardType: TextInputType.text,
-                      decoration: InputDecoration(),
+                      decoration: decoration,
+                      style: editTextStyle,
                     ),
                   ],
                 ),
               ),
               SizedBox(
-                height: 20.0,
+                height: 40.0,
               ),
-              SizedBox(
-                height: 50.0,
-                width: 340.0,
-                child: RaisedButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    color: Color(0xff753BBD),
-                    child: Text(
-                      "Save and log in",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 19.0,
-                      ),
-                    ),
-                    onPressed: () {
-                      if (varPassword.text == varRepeatPassword.text) {
-                        fetchPost(
-                            varName, varEmail, varPassword, varRepeatPassword);
-                        var emailSend = varEmail.text;
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return ActivationCode(emailSend);
-                        }));
-                      } else {
-                        _showDialog();
-                      }
-                    }),
-              ),
+              CustomButton(
+                onPress: () {
+                  if (varPassword.text == varRepeatPassword.text) {
+                    registerUser(
+                        varName, varEmail, varPassword, varRepeatPassword);
+                  } else {
+                    _showDialog();
+                  }
+                },
+                fillColor: AppColor.magenta,
+                title: "Save and log in",
+              )
             ],
           ),
         ),
@@ -251,7 +207,7 @@ class _CreateAccountState extends State<CreateAccount> {
     );
   }
 
-  void _showDialog() {
+  void _showDialog({msg}) {
     // flutter defined function
     showDialog(
       context: context,
@@ -259,7 +215,7 @@ class _CreateAccountState extends State<CreateAccount> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Attention"),
-          content: new Text("password has not match"),
+          content: new Text(msg ?? "password has not match"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
