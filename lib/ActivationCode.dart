@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hedy/AppColor.dart';
 import 'package:hedy/BlocProvider.dart';
 import 'package:hedy/CutomButton.dart';
+import 'package:hedy/HomePage.dart';
 import 'package:hedy/InfoBloc.dart';
 import 'package:hedy/ResetPassword.dart';
 import 'package:hedy/SliderPage.dart';
@@ -62,65 +63,79 @@ class _ActivationCodeState extends State<ActivationCode> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Scaffold(
-      backgroundColor: Colors.deepPurple[50],
-      body: Container(
-        color: Colors.white,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 40.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              SizedBox(
-                height: 64.0,
-              ),
-              Logo(),
-              SizedBox(
-                height: 30.0,
-              ),
-              Text(
-                "An activation code has been sent to your email ${_info.currentUser.email}, put the code in the box below",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16.0,
+    return WillPopScope(
+      child: Scaffold(
+        backgroundColor: Colors.deepPurple[50],
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          leading: IconButton(
+            color: Colors.black,
+            icon: Icon(Icons.arrow_back_ios),
+            onPressed: _backPressed,
+          ),
+        ),
+        body: Container(
+          color: Colors.white,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 40.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(
+                  height: 64.0,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 40.0,
-              ),
-              TextField(
-                controller: varCode,
-                keyboardType: TextInputType.number,
-                style: TextStyle(
-                  fontSize: 18.0,
+                Logo(),
+                SizedBox(
+                  height: 30.0,
                 ),
-                decoration: InputDecoration(
-                  hintText: "Activation code",
-                  hintStyle: TextStyle(
-                    color: Colors.grey,
+                Text(
+                  "An activation code has been sent to your email ${_info.currentUser.email}, put the code in the box below",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16.0,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 40.0,
+                ),
+                TextField(
+                  controller: varCode,
+                  keyboardType: TextInputType.number,
+                  style: TextStyle(
                     fontSize: 18.0,
                   ),
+                  decoration: InputDecoration(
+                    hintText: "Activation code",
+                    hintStyle: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 18.0,
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 32.0,
-              ),
-              CustomButton(
-                onPress: () {
-                  checkActivationCode(emailActive, code);
-                },
-                title: "Activate",
-                borderWidth: 0.0,
-                fillColor: AppColor.magenta,
-              ),
-              SizedBox(
-                height: 64.0,
-              ),
-            ],
+                SizedBox(
+                  height: 32.0,
+                ),
+                CustomButton(
+                  onPress: () {
+                    checkActivationCode(emailActive, code);
+                  },
+                  title: "Activate",
+                  borderWidth: 0.0,
+                  fillColor: AppColor.magenta,
+                ),
+                SizedBox(
+                  height: 64.0,
+                ),
+              ],
+            ),
           ),
         ),
       ),
+      onWillPop: () {
+        _backPressed();
+      },
     );
   }
 
@@ -144,6 +159,18 @@ class _ActivationCodeState extends State<ActivationCode> {
           ],
         );
       },
+    );
+  }
+
+  Future _backPressed() async{
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return HomePage();
+        },
+        settings: RouteSettings(name: "/signin"),
+      ),
     );
   }
 }

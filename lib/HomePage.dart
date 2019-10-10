@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage> {
           return DetailsPage();
         }));
       } else {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
           return ActivationCode();
         }));
       }

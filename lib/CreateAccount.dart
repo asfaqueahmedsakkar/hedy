@@ -5,6 +5,7 @@ import 'package:hedy/ActivationCode.dart';
 import 'package:hedy/AppColor.dart';
 import 'package:hedy/BlocProvider.dart';
 import 'package:hedy/CutomButton.dart';
+import 'package:hedy/HomePage.dart';
 import 'package:hedy/InfoBloc.dart';
 import 'package:hedy/Models/UserModel.dart';
 import 'package:hedy/ResetPassword.dart';
@@ -82,126 +83,147 @@ class _CreateAccountState extends State<CreateAccount> {
           borderSide: BorderSide(color: Colors.black, width: 1.0)),
     );
     TextStyle editTextStyle = TextStyle(fontSize: 18.0);
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            children: <Widget>[
-              SizedBox(
-                height: 32.0,
-              ),
-              Logo(),
-              SizedBox(
-                height: 16.0,
-              ),
-              Text(
-                "Create account",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 28.0,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              SizedBox(
-                height: 16.0,
-              ),
-              Text(
-                "We don't give your details to",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20.0,
-                ),
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Text(
-                "anyone else",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20.0,
-                ),
-              ),
-              SizedBox(
-                height: 5.0,
-              ),
-              Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 32.0,
-                    ),
-                    Text(
-                      "Email",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16.0,
-                      ),
-                    ),
-                    TextField(
-                      controller: varEmail,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: decoration,
-                      style: editTextStyle,
-                    ),
-                    SizedBox(
-                      height: 32.0,
-                    ),
-                    Text(
-                      "Password",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16.0,
-                      ),
-                    ),
-                    TextField(
-                      controller: varPassword,
-                      obscureText: true,
-                      keyboardType: TextInputType.text,
-                      decoration: decoration,
-                      style: editTextStyle,
-                    ),
-                    SizedBox(
-                      height: 32.0,
-                    ),
-                    Text(
-                      "Repeat Password",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16.0,
-                      ),
-                    ),
-                    TextField(
-                      controller: varRepeatPassword,
-                      obscureText: true,
-                      keyboardType: TextInputType.text,
-                      decoration: decoration,
-                      style: editTextStyle,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 40.0,
-              ),
-              CustomButton(
-                onPress: () {
-                  if (varPassword.text == varRepeatPassword.text) {
-                    registerUser(
-                        varName, varEmail, varPassword, varRepeatPassword);
-                  } else {
-                    _showDialog();
-                  }
-                },
-                fillColor: AppColor.magenta,
-                title: "Save and log in",
-              )
-            ],
+    return WillPopScope(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+          leading: IconButton(
+            color: Colors.black,
+            icon: Icon(Icons.arrow_back_ios),
+            onPressed: _backPressed,
           ),
         ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              children: <Widget>[
+                Logo(),
+                SizedBox(
+                  height: 16.0,
+                ),
+                Text(
+                  "Create account",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 28.0,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(
+                  height: 16.0,
+                ),
+                Text(
+                  "We don't give your details to",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20.0,
+                  ),
+                ),
+                SizedBox(
+                  height: 4.0,
+                ),
+                Text(
+                  "anyone else",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20.0,
+                  ),
+                ),
+                SizedBox(
+                  height: 5.0,
+                ),
+                Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(
+                        height: 32.0,
+                      ),
+                      Text(
+                        "Email",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                      TextField(
+                        controller: varEmail,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: decoration,
+                        style: editTextStyle,
+                      ),
+                      SizedBox(
+                        height: 32.0,
+                      ),
+                      Text(
+                        "Password",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                      TextField(
+                        controller: varPassword,
+                        obscureText: true,
+                        keyboardType: TextInputType.text,
+                        decoration: decoration,
+                        style: editTextStyle,
+                      ),
+                      SizedBox(
+                        height: 32.0,
+                      ),
+                      Text(
+                        "Repeat Password",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                      TextField(
+                        controller: varRepeatPassword,
+                        obscureText: true,
+                        keyboardType: TextInputType.text,
+                        decoration: decoration,
+                        style: editTextStyle,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 40.0,
+                ),
+                CustomButton(
+                  onPress: () {
+                    if (varPassword.text == varRepeatPassword.text) {
+                      registerUser(
+                          varName, varEmail, varPassword, varRepeatPassword);
+                    } else {
+                      _showDialog();
+                    }
+                  },
+                  fillColor: AppColor.magenta,
+                  title: "Save and log in",
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+      onWillPop: ()=>_backPressed(),
+    );
+  }
+
+  Future _backPressed() async {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return HomePage();
+        },
+        settings: RouteSettings(name: "/signin"),
       ),
     );
   }

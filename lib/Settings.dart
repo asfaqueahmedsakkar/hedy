@@ -433,7 +433,7 @@ class _SettingsPageState extends State<SettingsPage> {
         .toList();
     await http.post("http://app.hedy.info/api/subscribe", body: {
       "id_user": BlocProvider.of<InfoBloc>(context).currentUser.id.toString(),
-      "id_device": BlocProvider.of<InfoBloc>(context).oneSignalUid,
+      "id_device": BlocProvider.of<InfoBloc>(context).oneSignalUid.toString(),
       "action": "subscribe",
     });
     http.Response resp =
