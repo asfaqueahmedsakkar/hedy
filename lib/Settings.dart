@@ -1,14 +1,44 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hedy/AppColor.dart';
+import 'package:hedy/BlocProvider.dart';
+import 'package:hedy/CutomButton.dart';
+import 'package:hedy/InfoBloc.dart';
+import 'package:http/http.dart' as http;
 
 class SettingsPage extends StatefulWidget {
   _SettingsPageState createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  int currentFrequencyOfToSay, currentFrequencyOfToDo, currentFrequencyOfToBuy;
-  int currentWeekDayOfToSay, currentWeekDayOfToDo, currentWeekDayOfToBuy;
-  int currentMonthDayOfToSay, currentMonthDayOfToDo, currentMonthDayOfToBuy;
+  StreamController _streamController;
+
+  List<Settings> settings = [
+    Settings()
+      ..id = 1
+      ..frequency = 4,
+    Settings()
+      ..id = 2
+      ..frequency = 4,
+    Settings()
+      ..id = 3
+      ..frequency = 4,
+  ];
+
+  @override
+  void initState() {
+    _getCurrentSettings();
+    _streamController = new StreamController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _streamController.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,24 +59,48 @@ class _SettingsPageState extends State<SettingsPage> {
           style: TextStyle(fontSize: 24.0, color: Colors.black),
         ),
       ),
-      body: ListView(
-        children: <Widget>[
-          _settingsWithTitle(
-            msg: "Things to say",
-            currentSelected: currentFrequencyOfToSay,
-            id: 1,
-          ),
-          _settingsWithTitle(
-            msg: "Things to do",
-            currentSelected: currentFrequencyOfToDo,
-            id: 2,
-          ),
-          _settingsWithTitle(
-            msg: "Things to buy",
-            currentSelected: currentFrequencyOfToBuy,
-            id: 3,
-          ),
-        ],
+      body: StreamBuilder(
+        stream: _streamController.stream,
+        builder: (context, snapShot) {
+          if (snapShot.hasData && snapShot.data != null) {
+            return ListView(
+              children: <Widget>[
+                _settingsWithTitle(
+                  msg: "Things to say",
+                  currentSelected: settings[0].frequency,
+                  id: settings[0].id,
+                ),
+                _settingsWithTitle(
+                  msg: "Things to do",
+                  currentSelected: settings[1].frequency,
+                  id: settings[1].id,
+                ),
+                _settingsWithTitle(
+                  msg: "Things to buy",
+                  currentSelected: settings[2].frequency,
+                  id: settings[2].id,
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    width: 160.0,
+                    child: CustomButton(
+                      title: "Save",
+                      onPress: () {
+                        _saveSettings();
+                      },
+                      fillColor: AppColor.magenta,
+                      borderColor: Colors.white,
+                    ),
+                  ),
+                )
+              ],
+            );
+          }
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        },
       ),
     );
   }
@@ -84,7 +138,15 @@ class _SettingsPageState extends State<SettingsPage> {
           index: 2,
           currentSelect: currentSelected,
           onSelect: (index) {
-            _onSelect(id, index);
+            showDialog(
+              context: context,
+              builder: (context) {
+                return _buildWeekDaysDialog(id);
+              },
+            );
+          },
+          onTimePress: () {
+            _onSelect(id, 3);
           },
           onDatePress: () {
             showDialog(
@@ -100,7 +162,15 @@ class _SettingsPageState extends State<SettingsPage> {
           index: 3,
           currentSelect: currentSelected,
           onSelect: (index) {
-            _onSelect(id, index);
+            showDialog(
+              context: context,
+              builder: (context) {
+                return _buildMonthDaysDialog(id);
+              },
+            );
+          },
+          onTimePress: () {
+            _onSelect(id, 3);
           },
           onDatePress: () {
             showDialog(
@@ -213,11 +283,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   void _onSelect(int id, int index) {
     setState(() {
-      if (id == 1)
-        currentFrequencyOfToSay = index;
-      else if (id == 2)
-        currentFrequencyOfToDo = index;
-      else if (id == 3) currentFrequencyOfToBuy = index;
+      settings[id - 1].frequency = index;
       if (index != 4) {
         showTimePicker(
           context: context,
@@ -230,32 +296,25 @@ class _SettingsPageState extends State<SettingsPage> {
               child: child,
             );
           },
-          initialTime: TimeOfDay.now(),
-        );
+          initialTime: settings[id - 1].time,
+        ).then((td) {
+          if (td == null) return;
+          settings[id - 1].time = td;
+        });
       }
     });
   }
 
   int _getCurrentSelectedDayOfWeek(int id) {
-    if (id == 1)
-      return currentWeekDayOfToSay;
-    else if (id == 2)
-      return currentWeekDayOfToDo;
-    else if (id == 3)
-      return currentWeekDayOfToBuy;
-    else
-      return 0;
+    return settings[id - 1].day;
   }
 
   void _setWeekDay(int id, index) {
     Navigator.pop(context);
     setState(() {
-      if (id == 1)
-        currentWeekDayOfToSay = index;
-      else if (id == 2)
-        currentWeekDayOfToDo = index;
-      else if (id == 3) currentWeekDayOfToBuy = index;
+      settings[id - 1].day = index;
     });
+    _onSelect(id, 2);
   }
 
   Widget _buildMonthDaysDialog(int id) {
@@ -325,23 +384,153 @@ class _SettingsPageState extends State<SettingsPage> {
   void _setMonthDay(int id, index) {
     Navigator.pop(context);
     setState(() {
-      if (id == 1)
-        currentMonthDayOfToSay = index;
-      else if (id == 2)
-        currentMonthDayOfToDo = index;
-      else if (id == 3) currentMonthDayOfToBuy = index;
+      settings[id - 1].day = index;
     });
+    _onSelect(id, 3);
   }
 
   int _getCurrentSelectedDayOfMonth(int id) {
-    if (id == 1)
-      return currentMonthDayOfToSay;
-    else if (id == 2)
-      return currentMonthDayOfToDo;
-    else if (id == 3)
-      return currentMonthDayOfToBuy;
-    else
-      return 0;
+    return settings[id - 1].day;
+  }
+
+  void _getCurrentSettings() async {
+    http.post("http://app.hedy.info/api/user/settings", body: {
+      "id_user": BlocProvider.of<InfoBloc>(context).currentUser.id.toString(),
+    }).then((r) {
+      print(r.body);
+      dynamic json = jsonDecode(r.body);
+      dynamic settings = json["user_settings"];
+      if (settings != null) {
+        int i = 0;
+        for (dynamic json in settings)
+          if (json != null) this.settings[i++] = Settings.fromJson(json);
+      }
+      _streamController.add(true);
+    });
+  }
+
+  void _saveSettings() async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+    dynamic settings = this
+        .settings
+        .map((s) => {
+              "\"thing\"": s.id,
+              "\"frequency\"": s.frequency == 1
+                  ? "\"day\""
+                  : s.frequency == 2
+                      ? "\"week\""
+                      : s.frequency == 3 ? "\"month\"" : "\"never\"",
+              "\"day\"": s.day,
+              "\"timeofday\"": _formattedTime(s.time),
+            })
+        .toList();
+    await http.post("http://app.hedy.info/api/subscribe", body: {
+      "id_user": BlocProvider.of<InfoBloc>(context).currentUser.id.toString(),
+      "id_device": BlocProvider.of<InfoBloc>(context).oneSignalUid,
+      "action": "subscribe",
+    });
+    http.Response resp =
+        await http.post("http://app.hedy.info/api/settings", body: {
+      "id_user": BlocProvider.of<InfoBloc>(context).currentUser.id.toString(),
+      "settings_data": settings.toString(),
+    });
+    Navigator.pop(context);
+    if (resp.statusCode == 200) {
+      dynamic json = jsonDecode(resp.body);
+      if (json["status"] == 1)
+        _showDialog("Settings successfully updated", onOkPress: () {
+          Navigator.pop(context);
+          Navigator.pop(context);
+        });
+      else
+        _showDialog("Sorry, settings update failed", onOkPress: () {
+          Navigator.pop(context);
+        });
+    } else {
+      _showDialog("Sorry, settings update failed", onOkPress: () {
+        Navigator.pop(context);
+      });
+    }
+  }
+
+  void _showDialog(String msg, {Function onOkPress}) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => SimpleDialog(
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+              title: Text(
+                "Hedy",
+                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),
+              ),
+              children: <Widget>[
+                Text(
+                  msg,
+                  style: TextStyle(
+                    fontSize: 16.0,
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.centerRight,
+                  child: SizedBox(
+                    width: 60.0,
+                    child: FlatButton(
+                      color: AppColor.magenta,
+                      child: Text(
+                        "Ok",
+                        style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white),
+                      ),
+                      onPressed: onOkPress,
+                    ),
+                  ),
+                )
+              ],
+            ));
+  }
+
+  String _formattedTime(TimeOfDay timeOfDay) {
+    if (timeOfDay == null) return null;
+    return "\"${_formattedInt(timeOfDay.hour)}:${_formattedInt(timeOfDay.minute)}:${_formattedInt(0)}\"";
+  }
+
+  _formattedInt(int data) {
+    return data.toString().padLeft(2, "0");
+  }
+}
+
+class Settings {
+  int id = 0;
+  int frequency = 0;
+  int day = 0;
+  TimeOfDay time = TimeOfDay.now();
+
+  Settings();
+
+  Settings.fromJson(json) {
+    id = json["thing"];
+    frequency = json["frequency"] == "day"
+        ? 1
+        : json["frequency"] == "week"
+            ? 2
+            : json["frequency"] == "month" ? 3 : 4;
+    day = json["day"];
+    String _t = json["timeofday"];
+    if (_t != null) {
+      List t = _t.split(":");
+
+      time = TimeOfDay(minute: int.parse(t[1]), hour: int.parse(t[0]));
+    }
   }
 }
 

@@ -49,7 +49,6 @@ class _CreateAccountState extends State<CreateAccount> {
     });
 
     dynamic resp = jsonDecode(response.body);
-    print(response.body);
     if (resp["status"] == 1) {
       dynamic user = resp["user"];
       SharedPreferences sp = await SharedPreferences.getInstance();

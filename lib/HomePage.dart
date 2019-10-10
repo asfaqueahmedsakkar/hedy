@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:hedy/ActivationCode.dart';
 import 'package:hedy/AppColor.dart';
 import 'package:hedy/BlocProvider.dart';
@@ -92,7 +93,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {          
+  Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -178,6 +179,9 @@ class _HomePageState extends State<HomePage> {
               CustomButton(
                 title: "Log in with Facebook",
                 fillColor: AppColor.blue,
+                onPress: () {
+                  _facebookLogin();
+                },
               ),
               SizedBox(
                 height: 20.0,
@@ -240,5 +244,65 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  void _facebookLogin() async {
+    final facebookLogin = FacebookLogin();
+    final result = await facebookLogin.logInWithReadPermissions(['email']);
+    switch (result.status) {
+      case FacebookLoginStatus.loggedIn:
+        final token = result.accessToken.token;
+        final graphResponse = await http.get(
+            'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=$token');
+        final profile = jsonDecode(graphResponse.body);
+        _loginWithFacebookCredintial(profile);
+        break;
+      case FacebookLoginStatus.cancelledByUser:
+        break;
+      case FacebookLoginStatus.error:
+        _showDialog(msg: result.errorMessage);
+        break;
+    }
+  }
+
+  void _loginWithFacebookCredintial(dynamic json) async {
+    showDialog(
+        context: context,
+        builder: (context) => Center(
+              child: CircularProgressIndicator(),
+            ));
+
+    final response =
+        await http.post('http://app.hedy.info/api/login/facebook', body: {
+      'email': json["email"].toString(),
+      'facebook_id': json["id"].toString(),
+    }).catchError((e) {
+      print(e);
+    });
+
+    var decodedData = jsonDecode(response.body);
+    statusCode = decodedData['status'];
+    dynamic user = decodedData['user'];
+
+    Navigator.pop(context);
+    if (statusCode == 1) {
+      SharedPreferences sp = await SharedPreferences.getInstance();
+      await sp.setString("user", response.body);
+      UserModel userModel = UserModel.fromJson(user);
+      BlocProvider.of<InfoBloc>(context).currentUser = userModel;
+
+      if (userModel.completionStatus == 1) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return DetailsPage();
+        }));
+      } else {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return ActivationCode();
+        }));
+      }
+    } else {
+      _showDialog(msg: decodedData['error_messages'][0]);
+    }
   }
 }

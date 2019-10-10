@@ -5,6 +5,8 @@ class CustomButton extends StatelessWidget {
   final Function onPress;
   final Color fillColor, textColor, borderColor;
   final bool enabled;
+  final double borderWidth;
+  final double elevation;
 
   const CustomButton(
       {Key key,
@@ -13,7 +15,9 @@ class CustomButton extends StatelessWidget {
       this.fillColor,
       this.enabled = true,
       this.textColor,
-      this.borderColor})
+      this.borderColor,
+      this.borderWidth,
+      this.elevation})
       : super(key: key);
 
   @override
@@ -21,18 +25,18 @@ class CustomButton extends StatelessWidget {
     return SizedBox(
       height: 54.0,
       child: RawMaterialButton(
-        elevation: 0.0,
-        highlightElevation: 0.0,
+        elevation: elevation ?? 0.0,
+        highlightElevation: elevation ?? 0.0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
         ),
         fillColor: fillColor,
         splashColor: Colors.white.withOpacity(0.75),
-        padding: EdgeInsets.all(4.0),
+        padding: EdgeInsets.all(borderWidth==null?0.0:4.0),
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(
-              width: 0.1,
+              width: borderWidth ?? 0.1,
               color: borderColor ?? Colors.white,
             ),
             borderRadius: BorderRadius.circular(4),

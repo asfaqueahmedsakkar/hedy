@@ -36,7 +36,6 @@ class _ResetPasswordState extends State<ResetPassword> {
         'http://app.hedy.info/api/passwordreset/requestcode',
         body: {'email': emailController.text});
 
-    print(response.body);
     var decodedData = jsonDecode(response.body);
     statusCodeEmail = decodedData['status'];
     if (statusCodeEmail == 0)
@@ -52,7 +51,6 @@ class _ResetPasswordState extends State<ResetPassword> {
         'http://app.hedy.info/api/passwordreset/checkcode',
         body: {'email': emailController.text, 'code': codeController.text});
 
-    print(response.body);
     var decodedData = jsonDecode(response.body);
     statusCodeC = decodedData['status'];
 

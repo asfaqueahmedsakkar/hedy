@@ -47,7 +47,6 @@ class _PasswordTypedState extends State<PasswordTyped> {
       'password_confirmation': varConfirmPassword.text
     });
 
-    print(response.body);
     var decodedData = jsonDecode(response.body);
     statusCode = decodedData['status'];
 
@@ -132,8 +131,6 @@ class _PasswordTypedState extends State<PasswordTyped> {
                         MaterialPageRoute(builder: (context) {
                       return HomePage();
                     }));
-                    print(email);
-                    print(code);
                   } else {
                     _showDialog();
                   }

@@ -16,11 +16,13 @@ class DetailsPage extends StatefulWidget {
 class _DetailsPageState extends State<DetailsPage> {
   InfoBloc bloc;
   StreamController _streamController;
+  List<Notification> notifications;
 
   @override
   void initState() {
     bloc = BlocProvider.of<InfoBloc>(context);
     _streamController = new StreamController();
+    notifications = new List();
     getNotifications();
     super.initState();
   }
@@ -28,7 +30,6 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff963CBD),
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: GestureDetector(
@@ -45,27 +46,28 @@ class _DetailsPageState extends State<DetailsPage> {
             ),
           ),
         ),
-        title: Container(
-          child: Center(
-            child: Image(
-              image: AssetImage('images/hedy-logo-black.png'),
-              height: 32,
-            ),
+        title: Image(
+          image: AssetImage(
+            'images/hedy-logo-black.png',
           ),
-          alignment: Alignment.center,
+          height: 32,
         ),
+        centerTitle: true,
         actions: <Widget>[
-          GestureDetector(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return SettingsPage();
-              }));
-            },
-            child: Center(
-              child: Image(
-                image: AssetImage('images/settings.png'),
-                width: 32,
-                height: 32,
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return SettingsPage();
+                }));
+              },
+              child: Center(
+                child: Image(
+                  image: AssetImage('images/settings.png'),
+                  width: 30,
+                  height: 30,
+                ),
               ),
             ),
           )
@@ -74,9 +76,11 @@ class _DetailsPageState extends State<DetailsPage> {
       body: Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(
-            gradient: RadialGradient(
-                stops: [0.0, 1.4],
-                colors: [Colors.purpleAccent[400], Colors.deepPurple])),
+          image: DecorationImage(
+            image: AssetImage("images/slideback.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
         child: StreamBuilder(
             stream: _streamController.stream,
             builder: (context, snapShot) {
@@ -85,11 +89,124 @@ class _DetailsPageState extends State<DetailsPage> {
               else {
                 dynamic json = jsonDecode(snapShot.data);
 
-                if (json["status"] != 1) return _noNotificationUi();
+                if (json["status"] != 1)
+                  return _noNotificationUi();
+                else {
+                  notifications.clear();
+                  for (dynamic d in json["notifications"]) {
+                    notifications.add(Notification.fromJson(d));
+                    for (dynamic dd in d["data"])
+                      notifications.add(Notification.fromJson(dd));
+                  }
+                  return Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: ListView.builder(
+                      itemBuilder: (context, index) {
+                        if (notifications[index].title != null)
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 16.0,
+                            ),
+                            child: Text(
+                              notifications[index].title,
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18.0,
+                                  fontFamily: "Calibre"),
+                            ),
+                          );
+                        return Padding(
+                          padding: EdgeInsets.all(3.0),
+                          child: Dismissible(
+                            key: GlobalKey(),
+                            child: Container(
+                              padding: EdgeInsets.all(16.0),
+                              alignment: Alignment.centerLeft,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(4.0)),
+                              child: Text(
+                                notifications[index].message,
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 18.0,
+                                    fontFamily: "Calibre"),
+                              ),
+                            ),
+                            background: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.green,
+                                  borderRadius: BorderRadius.circular(4.0)),
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: Icon(
+                                  Icons.check,
+                                  color: Colors.white,
+                                  size: 32.0,
+                                ),
+                              ),
+                            ),
+                            secondaryBackground: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(4.0)),
+                              alignment: Alignment.centerRight,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                  size: 32.0,
+                                ),
+                              ),
+                            ),
+                            dismissThresholds: {
+                              DismissDirection.endToStart: 0.6,
+                              DismissDirection.startToEnd: 0.6,
+                            },
+                            onDismissed: (direction) {
+                              if (direction == DismissDirection.endToStart) {
+                                onComplete(
+                                  status: "hide",
+                                  id: notifications[index].id,
+                                );
+                              } else {
+                                onComplete(
+                                  status: "done",
+                                  id: notifications[index].id,
+                                );
+                              }
+                            },
+                          ),
+                        );
+                      },
+                      itemCount: notifications.length,
+                    ),
+                  );
+                }
               }
             }),
       ),
     );
+  }
+
+  void onComplete({String status, int id}) async {
+    showDialog(
+        context: context,
+        builder: (context) => Center(child: CircularProgressIndicator()));
+
+    await http.post("http://app.hedy.info/api/user/notifyactions", body: {
+      "id_user": bloc.currentUser.id.toString(),
+      "id_thing": id.toString(),
+      "action": status.toString(),
+    });
+    Navigator.pop(context);
+    getNotifications();
   }
 
   Column _noNotificationUi() {
@@ -134,5 +251,17 @@ class _DetailsPageState extends State<DetailsPage> {
       "id_user": bloc.currentUser.id.toString(),
     });
     _streamController.add(resp.body);
+  }
+}
+
+class Notification {
+  int id;
+  String message;
+  String title;
+
+  Notification.fromJson(json) {
+    id = json["id"];
+    message = json["message"];
+    title = json["title"];
   }
 }

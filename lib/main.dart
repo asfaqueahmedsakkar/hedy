@@ -16,6 +16,7 @@ void main() {
   runApp(
     BlocProvider(
       child: MaterialApp(
+        title: "Hedy",
         theme: ThemeData(
           fontFamily: "Calibre",
         ),
@@ -46,6 +47,7 @@ class _MyAppState extends State<MyApp> {
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) {
               return DetailsPage();
+              //return SliderPage();
             }));
           } else {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -72,13 +74,41 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-      decoration: BoxDecoration(
+      body: Container(
+        decoration: BoxDecoration(
           image: DecorationImage(
-        image: AssetImage('images/Loading.png'),
-        fit: BoxFit.cover,
-      )),
-    ));
+            image: AssetImage('images/Loading.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Image.asset(
+                "images/Hedy_logo_hozontal_white.png",
+                width: 180.0,
+                color: Colors.white,
+                colorBlendMode: BlendMode.srcIn,
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              Text(
+                "nice reminders",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 30.0,
+                  fontFamily: "Calibre",
+                  fontWeight: FontWeight.w300,
+                  letterSpacing: 0.4,
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   void _initOneSignal() async {
@@ -90,7 +120,7 @@ class _MyAppState extends State<MyApp> {
     };
 
     await OneSignal.shared.init(
-      "d7809362-d385-4fee-932a-30daff16ecc7",
+      "1a4c657f-1d15-459f-87d6-ecd92666466f",
       iOSSettings: settings,
     );
 

@@ -28,6 +28,7 @@ dependencies:
   onesignal: ^1.1.0
   firebase_core: ^0.4.0
   http: ^0.12.0+2
+  flutter_facebook_login: ^2.0.0
   shared_preferences:
 
 
@@ -58,6 +59,8 @@ flutter:
     - images/drawn-heart.png
     - images/Loading.png
     - images/hedy-logo-black.png
+    - images/Hedy_logo_hozontal_white.png
+    - images/slideback.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -75,6 +78,14 @@ flutter:
     - family: Calibre
       fonts:
         - asset: fonts/Calibre-Regular.otf
+        - asset: fonts/Calibre-Bold.otf
+          weight: 800
+        - asset: fonts/Calibre-Semibold.otf
+          weight: 600
+        - asset: fonts/Calibre-Light.otf
+          weight: 300
+        - asset: fonts/Calibre-Thin.otf
+          weight: 200
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

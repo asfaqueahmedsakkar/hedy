@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hedy/AppColor.dart';
 import 'package:hedy/BlocProvider.dart';
+import 'package:hedy/CutomButton.dart';
+import 'package:hedy/HomePage.dart';
 import 'package:hedy/InfoBloc.dart';
 import 'package:hedy/Models/UserModel.dart';
 import 'package:http/http.dart' as http;
@@ -30,7 +33,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
     xRelation = bloc.currentUser.xRated == "1" ? true : false;
     relation = bloc.currentUser.idRelation;
-    print(relation);
   }
 
   @override
@@ -115,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 "Your name",
                 style: TextStyle(
                   fontSize: 16.0,
-                  fontWeight: FontWeight.w300,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               SizedBox(
@@ -139,7 +141,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 "Your person's name",
                 style: TextStyle(
                   fontSize: 16.0,
-                  fontWeight: FontWeight.w300,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               SizedBox(
@@ -163,7 +165,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 "Your person's name",
                 style: TextStyle(
                   fontSize: 16.0,
-                  fontWeight: FontWeight.w300,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               SizedBox(
@@ -192,7 +194,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Text(
                 "We don't want to remind you to make a romantic dinner for your friend",
                 style: TextStyle(
-                  fontSize: 14.0,
+                  fontSize: 16.0,
                   fontWeight: FontWeight.w100,
                   fontStyle: FontStyle.italic,
                 ),
@@ -202,21 +204,52 @@ class _ProfilePageState extends State<ProfilePage> {
                   : SizedBox(
                       height: 32.0,
                     ),
-              RawMaterialButton(
-                fillColor: AppColor.magenta,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0)),
-                padding: EdgeInsets.symmetric(horizontal: 48.0, vertical: 12.0),
-                child: Text(
-                  "Save",
+              SizedBox(
+                width: 124.0,
+                height: 52.0,
+                child: CustomButton(
+                  fillColor: AppColor.magenta,
+                  title: "Save",
+                  onPress: () {
+                    updateProfile();
+                  },
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical:16.0),
+                child:
+                Text(
+                  "Sign out of your current account",
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.0,
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w400,
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
-                onPressed: () {
-                  updateProfile();
-                },
+              ),
+              SizedBox(
+                width: 160.0,
+                height: 60.0,
+                child: CustomButton(
+                  borderWidth: 3.0,
+                  fillColor: Colors.transparent,
+                  borderColor: AppColor.magenta,
+                  textColor: AppColor.magenta,
+                  title: "Log Out",
+                  onPress: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) => Center(
+                              child: CircularProgressIndicator(),
+                            ));
+                    SharedPreferences.getInstance().then((sp) {
+                      sp.setString("user",null);
+                      Navigator.pop(context);
+                      Navigator.pushAndRemoveUntil(context,
+                          MaterialPageRoute(builder: (context) => HomePage()),ModalRoute.withName("/"));
+                    });
+                  },
+                ),
               )
             ],
           ),
@@ -300,7 +333,7 @@ class _ProfilePageState extends State<ProfilePage> {
         Text(
           "You've been warned",
           style: TextStyle(
-            fontSize: 14.0,
+            fontSize: 16.0,
             fontWeight: FontWeight.w100,
             fontStyle: FontStyle.italic,
           ),

@@ -111,6 +111,7 @@ class _ActivationCodeState extends State<ActivationCode> {
                   checkActivationCode(emailActive, code);
                 },
                 title: "Activate",
+                borderWidth: 0.0,
                 fillColor: AppColor.magenta,
               ),
               SizedBox(
