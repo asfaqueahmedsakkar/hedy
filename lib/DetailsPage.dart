@@ -99,9 +99,9 @@ class _DetailsPageState extends State<DetailsPage> {
                       notifications.add(Notification.fromJson(dd));
                   }
                   return Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     child: ListView.builder(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                       itemBuilder: (context, index) {
                         if (notifications[index].title != null)
                           return Padding(

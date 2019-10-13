@@ -159,18 +159,43 @@ class _CustomClockState extends State<CustomClock> {
               color: Colors.white,
               width: widget.clockSize,
               padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: RawMaterialButton(
-                child: Text(
-                  "Ok",
-                  style: TextStyle(
-                      color: Colors.deepPurple,
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w600),
-                ),
-                onPressed: () {
-                  Navigator.pop(context,
-                      TimeOfDay(minute: minute, hour: isAm ? hour : hour + 12));
-                },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  SizedBox(
+                    width: 60.0,
+                    child: RawMaterialButton(
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(
+                            color: Colors.deepPurple,
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    width: 60.0,
+                    child: RawMaterialButton(
+                      child: Text(
+                        "Ok",
+                        style: TextStyle(
+                            color: Colors.deepPurple,
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(
+                            context,
+                            TimeOfDay(
+                                minute: minute, hour: isAm ? hour : hour + 12));
+                      },
+                    ),
+                  ),
+                ],
               ),
             )
           ],
