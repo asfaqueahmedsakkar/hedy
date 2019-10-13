@@ -286,23 +286,17 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       settings[id - 1].frequency = index;
       if (index != 4) {
-        /*showTimePicker(
-          context: context,
-          builder: (BuildContext context, Widget child) {
-            return Theme(
-              data: ThemeData.light().copyWith(
-                primaryColor: AppColor.magenta,
-                accentColor: AppColor.magenta,
-              ),
-              child: child,
-            );
+        showDialog(
+            context: context,
+            builder: (context) => CustomClock(
+                  clockSize: 260,
+                  initialTime: settings[id - 1].time,
+                )).then(
+          (td) {
+            if (td == null) return;
+            settings[id - 1].time = td;
           },
-          initialTime: settings[id - 1].time,
-        ).then((td) {
-          if (td == null) return;
-          settings[id - 1].time = td;
-        });*/
-        showDialog(context: context, builder: (context) => CustomClock());
+        );
       }
     });
   }
