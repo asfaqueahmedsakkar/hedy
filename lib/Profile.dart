@@ -131,7 +131,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(vertical: 4.0),
-                  hintText: "Your name",
+                  hintText: "Enter name",
                 ),
               ),
               SizedBox(
@@ -155,14 +155,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(vertical: 4.0),
-                  hintText: "Person's name",
+                  hintText: "Enter name",
                 ),
               ),
               SizedBox(
                 height: 32.0,
               ),
               Text(
-                "Your person's name",
+                "Relationship type",
                 style: TextStyle(
                   fontSize: 16.0,
                   fontWeight: FontWeight.w500,
@@ -195,7 +195,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 "We don't want to remind you to make a romantic dinner for your friend",
                 style: TextStyle(
                   fontSize: 16.0,
-                  fontWeight: FontWeight.w100,
+                  fontWeight: FontWeight.w400,
                   fontStyle: FontStyle.italic,
                 ),
               ),

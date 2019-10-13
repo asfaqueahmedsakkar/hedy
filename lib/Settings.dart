@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hedy/AppColor.dart';
 import 'package:hedy/BlocProvider.dart';
+import 'package:hedy/CustomClock.dart';
 import 'package:hedy/CutomButton.dart';
 import 'package:hedy/InfoBloc.dart';
 import 'package:http/http.dart' as http;
@@ -285,7 +286,7 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       settings[id - 1].frequency = index;
       if (index != 4) {
-        showTimePicker(
+        /*showTimePicker(
           context: context,
           builder: (BuildContext context, Widget child) {
             return Theme(
@@ -300,7 +301,8 @@ class _SettingsPageState extends State<SettingsPage> {
         ).then((td) {
           if (td == null) return;
           settings[id - 1].time = td;
-        });
+        });*/
+        showDialog(context: context, builder: (context) => CustomClock());
       }
     });
   }

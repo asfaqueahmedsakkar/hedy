@@ -60,7 +60,7 @@ class _SliderPageState extends State<SliderPage> {
                         height: 32.0,
                       ),
                       Text(
-                        "Life is busy and we sometimes forget to say and do simple things that let others know we care about them. Or you might just like some inspiration for nice things to say and do for your special person",
+                        "Life is busy and we sometimes forget to say and do the simple things that let others know we care about them. Or you might just like some inspiration for nice things to say and do for your special person.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
@@ -71,7 +71,7 @@ class _SliderPageState extends State<SliderPage> {
                         height: 4.0,
                       ),
                       Text(
-                        "We're here to help",
+                        "We’re here to help!",
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 22.0,
@@ -81,7 +81,7 @@ class _SliderPageState extends State<SliderPage> {
                         height: 32.0,
                       ),
                       Text(
-                        "Let's go through some basic steps to get you set up",
+                        "Let’s go through some basic steps to get you set up.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
@@ -109,7 +109,7 @@ class _SliderPageState extends State<SliderPage> {
                         height: 32.0,
                       ),
                       Text(
-                        "First of all we need some details about you and your special person, Simples stuff like your names and level of relationship",
+                        "First of all we need are some details about you and your special person. Simple stuff like your names and level of relationship.",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20.0,
@@ -120,7 +120,7 @@ class _SliderPageState extends State<SliderPage> {
                         height: 32.0,
                       ),
                       Text(
-                        "Once you've finished this guide you can click on the profile icon to get started",
+                        "Once you’ve finished this guide you can click on the profile icon to get started.",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20.0,
@@ -148,7 +148,7 @@ class _SliderPageState extends State<SliderPage> {
                         height: 32.0,
                       ),
                       Text(
-                        "Hedy can schedule reminders of nice things to say, do or buy for your person. These can be set to occur once a day, once a week or once a month",
+                        "Hedy can schedule reminders of nice things to say, do or buy for your person. These can be set to occur once a day, once a week or once a month.",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20.0,
@@ -159,7 +159,7 @@ class _SliderPageState extends State<SliderPage> {
                         height: 32.0,
                       ),
                       Text(
-                        "You can access the scheduling settings by clicking the calender/time icon in the top right corner.",
+                        "You can access the scheduling settings by clicking the calendar/time icon in the top right corner.",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20.0,
@@ -187,7 +187,7 @@ class _SliderPageState extends State<SliderPage> {
                         height: 25.0,
                       ),
                       Text(
-                        "Once we've sent you some reminders, you will see them all listed on the homescreen",
+                        "Once we’ve sent you some reminders, you will see them all listed on the homescreen.",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20.0,
@@ -198,7 +198,7 @@ class _SliderPageState extends State<SliderPage> {
                         height: 32.0,
                       ),
                       Text(
-                        "You can swipe right if you have done the things and we won't remind you of that again for a while. Swipe left if it's something you do't feel is quite right for you or your person and you won't recive that reminder again",
+                        "You can swipe right if you have done the thing and we won’t remind you of that again for a while. Swipe left if it’s something you don’t feel is quite right for you or your person and you won’t receive that reminder again.",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20.0,

@@ -65,7 +65,7 @@ class _ActivationCodeState extends State<ActivationCode> {
     // TODO: implement build
     return WillPopScope(
       child: Scaffold(
-        backgroundColor: Colors.deepPurple[50],
+        backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0.0,
