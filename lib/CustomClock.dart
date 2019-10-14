@@ -95,7 +95,7 @@ class _CustomClockState extends State<CustomClock> {
                       width: 56.0,
                       child: Center(
                         child: Text(
-                          "${(minute == 0 ? "60" : minute.toString()).padLeft(2, "0")}",
+                          "${(minute == 0 ? "00" : minute.toString()).padLeft(2, "0")}",
                           style: TextStyle(
                             color: !setHour ? Colors.white : Colors.white70,
                             fontSize: !setHour ? 52.0 : 46.0,
@@ -215,7 +215,7 @@ class _CustomClockState extends State<CustomClock> {
           math.sin(angle) * ((widget.clockSize - 32) / 2 - 15),
         ),
         child: Text(
-          "$j",
+          "${j.toString().padLeft(2, "0")}",
           style: TextStyle(
             color: j == hour || (j == 12 && hour == 0)
                 ? Colors.white
@@ -296,6 +296,7 @@ class _CustomClockState extends State<CustomClock> {
           _setCenter();
           double newAngle =
               coordinatesToRadians(_center, details.globalPosition);
+          if (newAngle >= math.pi-math.pi / 18) newAngle = -newAngle;
           for (int i = 0; i < _hourAngles.length; i++) {
             double ang = _hourAngles[i];
             if ((newAngle - ang).abs() < math.pi / 18) {
@@ -331,12 +332,14 @@ class _CustomClockState extends State<CustomClock> {
     int i = 44;
     List<Widget> _clockDiles = _minuteAngles.map((angle) {
       i++;
-      int j = i > 60 ? i % 60 : i;
+      int j = i >= 60 ? i % 60 : i;
 
       int k = j + 2, l = j - 2;
 
-      bool makeDeep =
-          j == minute || (j == 60 && minute == 0) || (k > minute && l < minute);
+      bool makeDeep = j == minute ||
+          (j == 60 && minute == 0) ||
+          (k > minute && l < minute) ||
+          ((k >= 61) && (minute == 1));
       return Transform.translate(
         offset: Offset(
           math.cos(angle) * ((widget.clockSize - 32) / 2 - 15),
@@ -344,7 +347,7 @@ class _CustomClockState extends State<CustomClock> {
         ),
         child: j % 5 == 0
             ? Text(
-                "$j",
+                "${j.toString().padLeft(2, "0")}",
                 style: TextStyle(
                   color: makeDeep ? Colors.white : Colors.deepPurple,
                   fontSize: 18.0,
@@ -406,6 +409,7 @@ class _CustomClockState extends State<CustomClock> {
           //_setCenter();
           double newAngle =
               coordinatesToRadians(_center, details.globalPosition);
+          if (newAngle >= math.pi-math.pi * 2 / 120) newAngle = -newAngle;
           for (int i = 0; i < _minuteAngles.length; i++) {
             double ang = _minuteAngles[i];
             if ((newAngle - ang).abs() < math.pi * 2 / 120) {

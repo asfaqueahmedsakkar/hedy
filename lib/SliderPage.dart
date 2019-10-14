@@ -177,7 +177,7 @@ class _SliderPageState extends State<SliderPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        "Remind list",
+                        "Reminder list",
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 36.0,
