@@ -14,10 +14,11 @@ class UserModel {
     userName = json["name"];
     personName = json["person_name"];
     email = json["email"];
-    idRelation =
-        json["id_relation"] == null ? 0 : int.parse(json["id_relation"].toString());
+    idRelation = json["id_relation"] == null
+        ? 0
+        : int.parse(json["id_relation"].toString());
     completionStatus = json["status"];
-    xRated = json["x_rated"] != null ? json["x_rated"]?"1":"0" : "0";
+    xRated = json["x_rated"] != null ? json["x_rated"] ? "1" : "0" : "0";
   }
 
   UserModel(

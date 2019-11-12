@@ -43,7 +43,6 @@ class _ActivationCodeState extends State<ActivationCode> {
     final response = await http.post(
         'http://app.hedy.info/api/user/activateprofile',
         body: {'email': _info.currentUser.email, 'code': varCode.text});
-    Navigator.pop(context);
 
     var decodedData = jsonDecode(response.body);
     statusCode = decodedData['status'];
@@ -51,8 +50,15 @@ class _ActivationCodeState extends State<ActivationCode> {
     await sp.setString("user", response.body);
 
     if (statusCode == 0) {
+      Navigator.pop(context);
       _showDialog();
     } else if (statusCode == 1) {
+      await http.post("http://app.hedy.info/api/subscribe", body: {
+        "id_user": BlocProvider.of<InfoBloc>(context).currentUser.id.toString(),
+        "id_device": BlocProvider.of<InfoBloc>(context).oneSignalUid.toString(),
+        "action": "subscribe",
+      });
+      Navigator.pop(context);
       Navigator.pushAndRemoveUntil(context,
           MaterialPageRoute(builder: (context) {
         return SliderPage();
@@ -133,8 +139,9 @@ class _ActivationCodeState extends State<ActivationCode> {
           ),
         ),
       ),
-      onWillPop: () {
-        _backPressed();
+      onWillPop: () async {
+        await _backPressed();
+        return false;
       },
     );
   }
@@ -162,7 +169,7 @@ class _ActivationCodeState extends State<ActivationCode> {
     );
   }
 
-  Future _backPressed() async{
+  Future _backPressed() async {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(

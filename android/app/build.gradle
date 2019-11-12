@@ -58,7 +58,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         manifestPlaceholders = [
-                onesignal_app_id: 'd7809362-d385-4fee-932a-30daff16ecc7',
+                onesignal_app_id               : 'd7809362-d385-4fee-932a-30daff16ecc7',
                 // Project number pulled from dashboard, local value is ignored.
                 onesignal_google_project_number: 'REMOTE'
         ]

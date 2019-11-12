@@ -216,9 +216,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(vertical:16.0),
-                child:
-                Text(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: Text(
                   "Sign out of your current account",
                   style: TextStyle(
                     fontSize: 16.0,
@@ -236,17 +235,24 @@ class _ProfilePageState extends State<ProfilePage> {
                   borderColor: AppColor.magenta,
                   textColor: AppColor.magenta,
                   title: "Log Out",
-                  onPress: () {
+                  onPress: () async{
                     showDialog(
                         context: context,
                         builder: (context) => Center(
                               child: CircularProgressIndicator(),
                             ));
+                    await http.post("http://app.hedy.info/api/subscribe", body: {
+                      "id_user": BlocProvider.of<InfoBloc>(context).currentUser.id.toString(),
+                      "id_device": BlocProvider.of<InfoBloc>(context).oneSignalUid.toString(),
+                      "action": "unsubscribe",
+                    });
                     SharedPreferences.getInstance().then((sp) {
-                      sp.setString("user",null);
+                      sp.setString("user", null);
                       Navigator.pop(context);
-                      Navigator.pushAndRemoveUntil(context,
-                          MaterialPageRoute(builder: (context) => HomePage()),ModalRoute.withName("/"));
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                          ModalRoute.withName("/"));
                     });
                   },
                 ),

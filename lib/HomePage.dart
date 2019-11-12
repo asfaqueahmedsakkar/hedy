@@ -81,7 +81,8 @@ class _HomePageState extends State<HomePage> {
           return DetailsPage();
         }));
       } else {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
           return ActivationCode();
         }));
       }
@@ -248,7 +249,8 @@ class _HomePageState extends State<HomePage> {
 
   void _facebookLogin() async {
     final facebookLogin = FacebookLogin();
-    final result = await facebookLogin.logInWithReadPermissions(['email']);
+    facebookLogin.loginBehavior = FacebookLoginBehavior.nativeOnly;
+    final result = await facebookLogin.logIn(['email']);
     switch (result.status) {
       case FacebookLoginStatus.loggedIn:
         final token = result.accessToken.token;
@@ -278,6 +280,11 @@ class _HomePageState extends State<HomePage> {
       'facebook_id': json["id"].toString(),
     }).catchError((e) {
       print(e);
+    });
+    await http.post("http://app.hedy.info/api/subscribe", body: {
+      "id_user": BlocProvider.of<InfoBloc>(context).currentUser.id.toString(),
+      "id_device": BlocProvider.of<InfoBloc>(context).oneSignalUid.toString(),
+      "action": "subscribe",
     });
 
     var decodedData = jsonDecode(response.body);

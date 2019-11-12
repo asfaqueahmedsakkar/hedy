@@ -50,7 +50,8 @@ class _MyAppState extends State<MyApp> {
               //return SliderPage();
             }));
           } else {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) {
               return ActivationCode();
             }));
           }

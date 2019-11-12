@@ -212,7 +212,7 @@ class _CreateAccountState extends State<CreateAccount> {
           ),
         ),
       ),
-      onWillPop: ()=>_backPressed(),
+      onWillPop: () => _backPressed(),
     );
   }
 

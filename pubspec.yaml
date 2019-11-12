@@ -28,7 +28,7 @@ dependencies:
   onesignal: ^1.1.0
   firebase_core: ^0.4.0
   http: ^0.12.0+2
-  flutter_facebook_login: ^2.0.0
+  flutter_facebook_login: ^3.0.0
   shared_preferences:
 
 

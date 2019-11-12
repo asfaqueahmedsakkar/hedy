@@ -296,7 +296,7 @@ class _CustomClockState extends State<CustomClock> {
           _setCenter();
           double newAngle =
               coordinatesToRadians(_center, details.globalPosition);
-          if (newAngle >= math.pi-math.pi / 18) newAngle = -newAngle;
+          if (newAngle >= math.pi - math.pi / 18) newAngle = -newAngle;
           for (int i = 0; i < _hourAngles.length; i++) {
             double ang = _hourAngles[i];
             if ((newAngle - ang).abs() < math.pi / 18) {
@@ -409,7 +409,7 @@ class _CustomClockState extends State<CustomClock> {
           //_setCenter();
           double newAngle =
               coordinatesToRadians(_center, details.globalPosition);
-          if (newAngle >= math.pi-math.pi * 2 / 120) newAngle = -newAngle;
+          if (newAngle >= math.pi - math.pi * 2 / 120) newAngle = -newAngle;
           for (int i = 0; i < _minuteAngles.length; i++) {
             double ang = _minuteAngles[i];
             if ((newAngle - ang).abs() < math.pi * 2 / 120) {

@@ -348,25 +348,25 @@ class _SettingsPageState extends State<SettingsPage> {
                   children: List.generate(
                     30,
                     (index) => Container(
-                          child: RawMaterialButton(
-                            elevation: 0.0,
-                            highlightElevation: 0.0,
-                            fillColor:
-                                _getCurrentSelectedDayOfMonth(id) == index + 1
-                                    ? Colors.grey[300]
-                                    : Colors.white,
-                            child: Text(
-                              "${index + 1}",
-                              style: TextStyle(
-                                color: AppColor.magenta,
-                                fontSize: 18.0,
-                              ),
-                            ),
-                            onPressed: () {
-                              _setMonthDay(id, index + 1);
-                            },
+                      child: RawMaterialButton(
+                        elevation: 0.0,
+                        highlightElevation: 0.0,
+                        fillColor:
+                            _getCurrentSelectedDayOfMonth(id) == index + 1
+                                ? Colors.grey[300]
+                                : Colors.white,
+                        child: Text(
+                          "${index + 1}",
+                          style: TextStyle(
+                            color: AppColor.magenta,
+                            fontSize: 18.0,
                           ),
                         ),
+                        onPressed: () {
+                          _setMonthDay(id, index + 1);
+                        },
+                      ),
+                    ),
                   ).toList(),
                 ),
               )
@@ -427,11 +427,6 @@ class _SettingsPageState extends State<SettingsPage> {
               "\"timeofday\"": _formattedTime(s.time),
             })
         .toList();
-    await http.post("http://app.hedy.info/api/subscribe", body: {
-      "id_user": BlocProvider.of<InfoBloc>(context).currentUser.id.toString(),
-      "id_device": BlocProvider.of<InfoBloc>(context).oneSignalUid.toString(),
-      "action": "subscribe",
-    });
     http.Response resp =
         await http.post("http://app.hedy.info/api/settings", body: {
       "id_user": BlocProvider.of<InfoBloc>(context).currentUser.id.toString(),

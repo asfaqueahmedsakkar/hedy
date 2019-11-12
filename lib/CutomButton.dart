@@ -32,7 +32,7 @@ class CustomButton extends StatelessWidget {
         ),
         fillColor: fillColor,
         splashColor: Colors.white.withOpacity(0.75),
-        padding: EdgeInsets.all(borderWidth==null?0.0:4.0),
+        padding: EdgeInsets.all(borderWidth == null ? 0.0 : 4.0),
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(
