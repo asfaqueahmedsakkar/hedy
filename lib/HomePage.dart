@@ -281,22 +281,23 @@ class _HomePageState extends State<HomePage> {
     }).catchError((e) {
       print(e);
     });
-    await http.post("http://app.hedy.info/api/subscribe", body: {
-      "id_user": BlocProvider.of<InfoBloc>(context).currentUser.id.toString(),
-      "id_device": BlocProvider.of<InfoBloc>(context).oneSignalUid.toString(),
-      "action": "subscribe",
-    });
 
     var decodedData = jsonDecode(response.body);
     statusCode = decodedData['status'];
     dynamic user = decodedData['user'];
-
-    Navigator.pop(context);
     if (statusCode == 1) {
       SharedPreferences sp = await SharedPreferences.getInstance();
       await sp.setString("user", response.body);
       UserModel userModel = UserModel.fromJson(user);
       BlocProvider.of<InfoBloc>(context).currentUser = userModel;
+
+      await http.post("http://app.hedy.info/api/subscribe", body: {
+        "id_user": BlocProvider.of<InfoBloc>(context).currentUser.id.toString(),
+        "id_device": BlocProvider.of<InfoBloc>(context).oneSignalUid.toString(),
+        "action": "subscribe",
+      });
+
+      Navigator.pop(context);
 
       if (userModel.completionStatus == 1) {
         Navigator.pushReplacement(context,
