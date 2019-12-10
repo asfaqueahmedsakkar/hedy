@@ -120,6 +120,7 @@ class _SettingsPageState extends State<SettingsPage> {
               border: Border(
             bottom: BorderSide(color: Colors.grey, width: 0.2),
           )),
+          alignment: Alignment.centerLeft,
           child: Text(
             msg,
             style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w500),

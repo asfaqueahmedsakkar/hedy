@@ -155,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                     }));
                   },
                   child: Text(
-                    "Forget password ?",
+                    "Forgot password ?",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 14.0,
